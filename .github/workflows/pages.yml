@@ -3,17 +3,18 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Adjust if your default branch is not 'main'
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          folder: src
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./src
