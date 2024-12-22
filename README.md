@@ -29,13 +29,15 @@ Visit the live version of the project [here](https://jyotibrat.github.io/MarkVie
 ```
 MarkView
 ├── src
-│   ├── index.html       # Main HTML file
-│   ├── styles.css       # Stylesheet
-│   ├── script.js        # JavaScript logic
+│   ├── index.html
+│   ├── styles.css
+│   ├── script.js
+|   └── Readme.md
 ├── .github
 │   └── workflows
-│       └── pages.yml    # Deployment workflow
-└── README.md            # Project documentation
+│       └── pages.yml
+├── LICENSE
+└── README.md
 ```
 ---
 ## **Getting Started**
