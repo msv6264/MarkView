@@ -16,6 +16,7 @@
 - HTML5
 - CSS3
 - JavaScript
+- Marked JS Library
 - GitHub Pages for Deployment
 
 ---
