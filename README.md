@@ -35,6 +35,7 @@ MarkView
 │   ├── script.js
 |   └── Readme.md
 ├── .github
+|   └── ISSUE_TEMPLATE
 │   └── workflows
 │       └── pages.yml
 ├── LICENSE
