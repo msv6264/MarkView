@@ -31,6 +31,7 @@ Visit the live version of the project [here](https://jyotibrat.github.io/MarkVie
 MarkView
 ├── src
 │   ├── index.html
+|   ├── about.html
 │   ├── styles.css
 │   ├── script.js
 |   └── Readme.md
