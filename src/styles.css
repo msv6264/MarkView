@@ -47,7 +47,6 @@ body, h1, h2, p, button, select, textarea, div {
     margin: 0 !important;
     padding: 0;
     cursor: pointer;
-    border: 1px solid #99b9de;
   }
 
   .logo :hover{
