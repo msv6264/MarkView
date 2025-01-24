@@ -815,6 +815,18 @@ label {
   display: block;
 }
 
+input[type="file"] {
+  display: block;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: #0066cc;
+  color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
 
 input[type="file"]:hover {
   background: #005bb5;
