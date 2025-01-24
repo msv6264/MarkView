@@ -39,6 +39,22 @@ body, h1, h2, p, button, select, textarea, div {
     overflow-x: hidden;
   }
 
+  .logo{
+    height: 90px;
+    width: 90px;
+    border-radius: 50%;
+    box-shadow: white 0px 0px 10px 3px;
+    margin: 0 !important;
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid #99b9de;
+  }
+
+  .logo :hover{
+    /* transform: scale(1.1); */
+    scale: 1.1;
+  }
+
   nav a{
     color: white;
     text-decoration: none;
@@ -50,6 +66,9 @@ body, h1, h2, p, button, select, textarea, div {
   }
   
   header {
+    padding: 10px !important;
+    padding-left: 5% !important;
+    padding-right: 5% !important;
     background-color: var(--nav-color);
     color: var(--header-h1);
     padding: 20px 10%;
