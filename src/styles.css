@@ -794,3 +794,44 @@ hr {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transform: scale(1.1);
 }
+/* Main Content */
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.43);
+}
+
+section {
+  margin-bottom: 1.5rem;
+  border-radius: 25px;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+
+input[type="file"]:hover {
+  background: #005bb5;
+}
+
+#preview {
+  margin-top: 2rem;
+}
+
+#preview h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+#content {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fafafa;
+}
