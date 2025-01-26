@@ -6,6 +6,7 @@
     <title>About MarkView</title>
     <link rel="stylesheet" href="styles/about.css">
     <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/themes.css">
     <style>
         /* General Styles */
         body {
@@ -18,7 +19,7 @@
         }
 
         h1 {
-            color: #222;
+            color: var(--text-color); /* Combined style using variable */
             text-align: center;
             font-size: 2.5rem;
             margin-top: 20px;
@@ -130,7 +131,9 @@
         </section>
     </main>
 
-    <button onclick="topFunction()" id="scrBtn" title="Go to top">Top</button> 
+    <button onclick="topFunction()" id="scrBtn" title="Go to top">
+        <i class="fas fa-arrow-up fa-lg"></i>
+    </button> 
 
     <div id="footer-placeholder">Footer will load here</div>
 
