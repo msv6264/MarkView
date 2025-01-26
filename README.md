@@ -30,20 +30,32 @@ Visit the live version of the project [here](https://jyotibrat.github.io/MarkVie
 ```
 MarkView
 ├── src
+│   ├── styles 
+│   │   ├── about.css
+│   │   ├── base.css
+│   │   ├── components.css
+│   │   ├── file_upload.css
+│   │   ├── footer.css
+│   │   └── themes.css
+│   ├── about.html
+│   ├── file_upload.html
+│   ├── footer.html
 │   ├── index.html
-|   ├── about.html
-|   ├── file_upload.html
-│   ├── styles.css
+│   ├── navbar.html
 │   ├── script.js
-|   └── Readme.md
+│   └── Readme.md
 ├── .github
-|   └── ISSUE_TEMPLATE
+│   ├── ISSUE_TEMPLATE 
 │   └── workflows
 │       └── pages.yml
-├── LICENSE
+├── LICENSE 
 └── README.md
 ```
 ---
+-Base.css has styles for index.html
+-components has navbar and common components for index and others
+-script.js has all the javascripts
+
 ## **Getting Started**
 
 ### Prerequisites
