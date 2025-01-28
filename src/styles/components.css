@@ -150,7 +150,6 @@ nav a:hover {
   transition: all 0.3s ease;
 }
 
-<<<<<<< HEAD
 /* Export Button Styles */
 .preview-section {
   position: relative;
@@ -256,7 +255,6 @@ nav a:hover {
   display: block;
 }
 
-=======
 /* Toggle Switch Styles */
 .switch {
   position: relative;
@@ -303,8 +301,45 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
+/* Button styles for light theme */
+.theme-light .primary-button,
+.theme-light #show-preview,
+.theme-light #export-btn {
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+}
 
->>>>>>> 01032ea309ee3a2cf90a649126a76651af42ed28
+.theme-light .primary-button:hover,
+.theme-light #show-preview:hover,
+.theme-light #export-btn:hover {
+  background-color: #333333;
+  border-color: #333333;
+}
+
+/* Ensure dropdown content buttons match the style */
+.theme-light .download-content button {
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.theme-light .download-content button:hover {
+  background-color: #333333;
+  border-color: #333333;
+}
+
+/* Ensure responsive styles maintain the same colors */
+@media (max-width: 768px) {
+  .theme-light .primary-button,
+  .theme-light #show-preview,
+  .theme-light #export-btn,
+  .theme-light .download-content button {
+    background-color: #000000;
+    color: #ffffff;
+  }
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .navbar {

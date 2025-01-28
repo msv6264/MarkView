@@ -81,7 +81,6 @@ function loadFooter() {
     .catch(error => console.error('Error loading footer:', error));
 }
 
-<<<<<<< HEAD
 // Attach theme selector listener
 function attachThemeListener() {
   if (themeSelector) {
@@ -208,163 +207,64 @@ async function downloadAsPdf() {
   try {
     document.body.style.cursor = 'wait';
     
-    // Create a temporary container with the markdown content
-    const container = document.createElement('div');
-    container.style.width = '793px'; // A4 width in pixels at 96 DPI
-    container.style.padding = '40px';
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.backgroundColor = '#ffffff';
-    container.style.wordBreak = 'break-word';
+    // Create new jsPDF instance
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
+    });
+
+    // Set basic styles
+    doc.setFont('helvetica');
+    doc.setFontSize(12);
     
-    // Add styles for the PDF content
-    container.innerHTML = `
-      <style>
-        * { margin: 0; padding: 0; }
-        body { 
-          font-family: Arial, sans-serif; 
-          line-height: 1.6; 
-          color: #333;
-          font-size: 12pt;
-        }
-        h1 { font-size: 24pt; margin: 20px 0; color: #000; }
-        h2 { font-size: 20pt; margin: 18px 0; color: #000; }
-        h3 { font-size: 16pt; margin: 16px 0; color: #000; }
-        h4 { font-size: 14pt; margin: 16px 0; color: #000; }
-        h5 { font-size: 12pt; margin: 16px 0; color: #000; }
-        h6 { font-size: 11pt; margin: 16px 0; color: #000; }
-        p { margin: 12px 0; line-height: 1.6; }
-        strong { color: #000; font-weight: bold; }
-        em { font-style: italic; }
-        blockquote { 
-          border-left: 3px solid #ccc; 
-          margin: 15px 0;
-          padding: 10px 20px;
-          color: #666;
-          background: #f9f9f9;
-        }
-        code {
-          background: #f5f5f5;
-          padding: 2px 5px;
-          border-radius: 3px;
-          font-family: 'Courier New', monospace;
-          font-size: 11pt;
-        }
-        pre {
-          background: #f5f5f5;
-          padding: 15px;
-          border-radius: 5px;
-          font-family: 'Courier New', monospace;
-          white-space: pre-wrap;
-          margin: 15px 0;
-          font-size: 11pt;
-        }
-        ul, ol { 
-          margin: 10px 0 10px 30px;
-          padding-left: 20px;
-        }
-        li { 
-          margin: 8px 0;
-          padding-left: 10px;
-        }
-        table {
-          border-collapse: collapse;
-          width: 100%;
-          margin: 15px 0;
-        }
-        th, td {
-          border: 1px solid #ddd;
-          padding: 12px;
-          text-align: left;
-        }
-        img { 
-          max-width: 100%;
-          height: auto;
-          margin: 15px 0;
-        }
-        hr { 
-          border: none;
-          border-top: 1px solid #ddd;
-          margin: 20px 0;
-        }
-      </style>
-      ${marked.parse(markdownInput.value)}
+    // Get the HTML content with styles
+    const content = preview.innerHTML;
+    
+    // Create a temporary container with styles
+    const temp = document.createElement('div');
+    temp.innerHTML = content;
+    temp.style.cssText = `
+      font-family: helvetica;
+      font-size: 12pt;
+      line-height: 1.5;
+      padding: 20px;
     `;
 
-    document.body.appendChild(container);
+    // Apply markdown styles
+    const styles = `
+      h1 { font-size: 24pt; margin: 20px 0; font-weight: bold; }
+      h2 { font-size: 20pt; margin: 18px 0; font-weight: bold; }
+      h3 { font-size: 16pt; margin: 16px 0; font-weight: bold; }
+      p { margin: 12px 0; }
+      code { font-family: monospace; background: #f5f5f5; padding: 2px 4px; }
+      pre { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+      blockquote { border-left: 3px solid #ccc; padding-left: 10px; margin: 10px 0; }
+      ul, ol { margin: 10px 0; padding-left: 20px; }
+      li { margin: 5px 0; }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = styles;
+    temp.appendChild(styleSheet);
+    document.body.appendChild(temp);
 
-    // Convert to canvas with higher quality settings
-    const canvas = await html2canvas(container, {
-      scale: 3, // Increased scale for better quality
-      useCORS: true,
-      logging: false,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      windowWidth: container.scrollWidth,
-      height: container.scrollHeight,
-      scrollY: -window.scrollY,
-      scrollX: 0,
-      imageTimeout: 0,
-      onclone: (clonedDoc) => {
-        clonedDoc.querySelector('div').style.transform = 'scale(1)';
-      }
+    // Convert to PDF with applied styles
+    await doc.html(temp, {
+      callback: function(doc) {
+        doc.save('markdown-export.pdf');
+      },
+      x: 15,
+      y: 15,
+      width: 180,
+      windowWidth: 800
     });
 
-    // Initialize PDF with precise dimensions
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: 'a4',
-      compress: false
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 40;
-
-    // Calculate dimensions while maintaining aspect ratio
-    const availableWidth = pageWidth - (margin * 2);
-    const availableHeight = pageHeight - (margin * 2);
-    const aspectRatio = canvas.width / canvas.height;
-    
-    // Calculate the number of pages needed
-    const imgHeight = availableWidth / aspectRatio;
-    const pageCount = Math.ceil(imgHeight / availableHeight);
-
-    // Add content to PDF pages
-    for (let i = 0; i < pageCount; i++) {
-      if (i > 0) pdf.addPage();
-
-      const sourceY = (i * canvas.height / pageCount) >> 0;
-      const sourceHeight = (canvas.height / pageCount) >> 0;
-
-      pdf.addImage(
-        canvas,
-        'JPEG',
-        margin,
-        margin,
-        availableWidth,
-        availableHeight,
-        null,
-        'FAST',
-        0,
-        {
-          sourceX: 0,
-          sourceY: sourceY,
-          sourceWidth: canvas.width,
-          sourceHeight: sourceHeight
-        }
-      );
-    }
-
-    // Save with high quality settings
-    pdf.save('markdown-export.pdf');
-    
     // Cleanup
-    document.body.removeChild(container);
+    document.body.removeChild(temp);
     console.log('PDF generated successfully');
-
+    
   } catch (error) {
     console.error('PDF generation failed:', error);
     alert('Failed to generate PDF. Please try again.');
@@ -378,9 +278,7 @@ function downloadAsMarkdown() {
   downloadFile(new Blob([content], { type: 'text/markdown' }), 'export.md');
 }
 
-=======
 // Attach event listeners
->>>>>>> 01032ea309ee3a2cf90a649126a76651af42ed28
 function attachEventListeners() {
   console.log('Attaching event listeners');
 
@@ -410,6 +308,10 @@ function attachEventListeners() {
   const downloadMdButton = document.getElementById('download-md');
   const clearButton = document.getElementById('clear-markdown');
 
+  // Check if we're on the main editor page
+  const markdownInput = document.getElementById('markdown-input');
+  const isEditorPage = !!markdownInput;
+
   // Attach listeners only if elements exist
   if (realTimeToggle) {
     realTimeToggle.addEventListener('change', (e) => {
@@ -430,7 +332,7 @@ function attachEventListeners() {
     });
   }
 
-  if (downloadHtmlButton) {
+  if (downloadHtmlButton && isEditorPage) {
     downloadHtmlButton.addEventListener('click', (e) => {
       e.preventDefault();
       console.log('Download HTML button clicked');
@@ -441,8 +343,11 @@ function attachEventListeners() {
   if (downloadPdfButton) {
     downloadPdfButton.addEventListener('click', async (e) => {
       e.preventDefault();
+      if (downloadPdfButton.disabled) return; // Prevent double clicks
+      downloadPdfButton.disabled = true; // Disable button while processing
       console.log('Download PDF button clicked');
       await downloadAsPdf();
+      downloadPdfButton.disabled = false; // Re-enable button after processing
     });
   }
 
@@ -465,30 +370,12 @@ function attachEventListeners() {
 
 const debouncedRenderMarkdown = debounce(renderMarkdown, 200);
 
-<<<<<<< HEAD
-function attachExportListeners() {
-  const downloadHtmlBtn = document.getElementById('download-html');
-  const downloadPdfBtn = document.getElementById('download-pdf');
-  const downloadMdBtn = document.getElementById('download-md');
-
-  if (downloadHtmlBtn) {
-    downloadHtmlBtn.addEventListener('click', downloadAsHtml);
-  }
-  if (downloadPdfBtn) {
-    downloadPdfBtn.addEventListener('click', downloadAsPdf);
-  }
-  if (downloadMdBtn) {
-    downloadMdBtn.addEventListener('click', downloadAsMarkdown);
-  }
-}
-
 function initializeApp() {
   console.log('Initializing app');
   
   Promise.all([loadNavbar(), loadFooter()])
     .then(() => {
-      attachEventListeners();
-      attachExportListeners();
+      attachEventListeners(); // Only call this once
       applyTheme('light');
       
       const markdownInput = document.getElementById('markdown-input');
@@ -512,7 +399,8 @@ function initializeApp() {
       }
     })
     .catch(error => console.error('Error initializing app:', error));
-=======
+} // Add missing closing brace here
+
 function renderMarkdown() {
   const markdownInput = document.getElementById('markdown-input');
   const preview = document.getElementById('preview');
@@ -531,7 +419,6 @@ function renderMarkdown() {
     console.log('Error rendering markdown:', error);
     preview.innerHTML = `<p style="color: red;">Error rendering markdown: ${error.message}</p>`;
   }
->>>>>>> 01032ea309ee3a2cf90a649126a76651af42ed28
 }
 
 function debounce(func, delay = 300) {
@@ -586,27 +473,71 @@ function downloadAsHtml() {
 }
 
 async function downloadAsPdf() {
-  const element = document.createElement('div');
-  element.innerHTML = preview.innerHTML;
-  element.style.padding = '20px';
-  element.style.fontFamily = 'Arial, sans-serif';
-
-  const opt = {
-    margin: [10, 10, 10, 10],
-    filename: 'markdown-preview.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
   try {
     document.body.style.cursor = 'wait';
-    await html2pdf().from(element).set(opt).save();
-    document.body.style.cursor = 'default';
-    console.log('Downloaded preview as PDF');
+    
+    // Create new jsPDF instance
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
+    });
+
+    // Set basic styles
+    doc.setFont('helvetica');
+    doc.setFontSize(12);
+    
+    // Get the HTML content with styles
+    const content = preview.innerHTML;
+    
+    // Create a temporary container with styles
+    const temp = document.createElement('div');
+    temp.innerHTML = content;
+    temp.style.cssText = `
+      font-family: helvetica;
+      font-size: 12pt;
+      line-height: 1.5;
+      padding: 20px;
+    `;
+
+    // Apply markdown styles
+    const styles = `
+      h1 { font-size: 24pt; margin: 20px 0; font-weight: bold; }
+      h2 { font-size: 20pt; margin: 18px 0; font-weight: bold; }
+      h3 { font-size: 16pt; margin: 16px 0; font-weight: bold; }
+      p { margin: 12px 0; }
+      code { font-family: monospace; background: #f5f5f5; padding: 2px 4px; }
+      pre { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+      blockquote { border-left: 3px solid #ccc; padding-left: 10px; margin: 10px 0; }
+      ul, ol { margin: 10px 0; padding-left: 20px; }
+      li { margin: 5px 0; }
+    `;
+    
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = styles;
+    temp.appendChild(styleSheet);
+    document.body.appendChild(temp);
+
+    // Convert to PDF with applied styles
+    await doc.html(temp, {
+      callback: function(doc) {
+        doc.save('markdown-export.pdf');
+      },
+      x: 15,
+      y: 15,
+      width: 180,
+      windowWidth: 800
+    });
+
+    // Cleanup
+    document.body.removeChild(temp);
+    console.log('PDF generated successfully');
+    
   } catch (error) {
     console.error('PDF generation failed:', error);
     alert('Failed to generate PDF. Please try again.');
+  } finally {
     document.body.style.cursor = 'default';
   }
 }
