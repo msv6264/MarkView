@@ -1,36 +1,34 @@
-// script.js
+document.addEventListener('DOMContentLoaded', initializeApp);
 
-const markdownInput = document.getElementById('markdown-input');
-const preview = document.getElementById('preview');
-let themeSelector;
+function initializeApp() {
+  console.log('Initializing app');
 
-// Utility: Debounce function for performance optimization (real-time preview)
-function debounce(func, delay = 300) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), delay);
-  };
+  loadNavbar();
+  loadFooter();
+  attachEventListeners();
+
+  // Get the theme from localStorage or default to 'light'
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  applyTheme(savedTheme);
+
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    // Set the initial state of the toggle based on the saved theme
+    themeToggle.checked = savedTheme === 'dark';
+
+    // Add event listener to toggle switch
+    themeToggle.addEventListener('change', (e) => {
+      const theme = e.target.checked ? 'dark' : 'light';
+      applyTheme(theme);
+      localStorage.setItem('theme', theme);
+    });
+  }
 }
 
-function renderMarkdown() {
-  const markdownInput = document.getElementById('markdown-input');
-  const preview = document.getElementById('preview');
-  
-  if (!markdownInput || !preview) {
-    console.log('Markdown editor elements not found on this page');
-    return;
-  }
-
-  const markdownText = markdownInput.value;
-  console.log('Rendering markdown:', markdownText);
-  try {
-    preview.innerHTML = marked.parse(markdownText) || '<p>No content to preview</p>';
-    console.log('Markdown rendered successfully');
-  } catch (error) {
-    console.log('Error rendering markdown:', error);
-    preview.innerHTML = `<p style="color: red;">Error rendering markdown: ${error.message}</p>`;
-  }
+function applyTheme(theme) {
+  document.body.classList.remove('theme-light', 'theme-dark');
+  document.body.classList.add(`theme-${theme}`);
+  console.log('Applied theme:', theme);
 }
 
 // Load the navbar dynamically
@@ -40,9 +38,16 @@ function loadNavbar() {
     .then(response => response.text())
     .then(data => {
       navbarPlaceholder.innerHTML = data;
-      themeSelector = document.getElementById('theme-selector');
-      attachThemeListener();
-      
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        themeToggle.checked = savedTheme === 'dark';
+        themeToggle.addEventListener('change', (e) => {
+          const theme = e.target.checked ? 'dark' : 'light';
+          applyTheme(theme);
+          localStorage.setItem('theme', theme);
+        });
+      }
       // Add Sidebar Navigation Handler after navbar is loaded
       const hamburger = document.querySelector('.hamburger');
       if (hamburger) {
@@ -76,6 +81,7 @@ function loadFooter() {
     .catch(error => console.error('Error loading footer:', error));
 }
 
+<<<<<<< HEAD
 // Attach theme selector listener
 function attachThemeListener() {
   if (themeSelector) {
@@ -372,9 +378,12 @@ function downloadAsMarkdown() {
   downloadFile(new Blob([content], { type: 'text/markdown' }), 'export.md');
 }
 
+=======
+// Attach event listeners
+>>>>>>> 01032ea309ee3a2cf90a649126a76651af42ed28
 function attachEventListeners() {
   console.log('Attaching event listeners');
-  
+
   // Check if elements exist before attaching listeners
   const showPreviewButton = document.getElementById('show-preview');
   if (showPreviewButton) {
@@ -456,6 +465,7 @@ function attachEventListeners() {
 
 const debouncedRenderMarkdown = debounce(renderMarkdown, 200);
 
+<<<<<<< HEAD
 function attachExportListeners() {
   const downloadHtmlBtn = document.getElementById('download-html');
   const downloadPdfBtn = document.getElementById('download-pdf');
@@ -502,6 +512,150 @@ function initializeApp() {
       }
     })
     .catch(error => console.error('Error initializing app:', error));
+=======
+function renderMarkdown() {
+  const markdownInput = document.getElementById('markdown-input');
+  const preview = document.getElementById('preview');
+  
+  if (!markdownInput || !preview) {
+    console.log('Markdown editor elements not found on this page');
+    return;
+  }
+
+  const markdownText = markdownInput.value;
+  console.log('Rendering markdown:', markdownText);
+  try {
+    preview.innerHTML = marked.parse(markdownText) || '<p>No content to preview</p>';
+    console.log('Markdown rendered successfully');
+  } catch (error) {
+    console.log('Error rendering markdown:', error);
+    preview.innerHTML = `<p style="color: red;">Error rendering markdown: ${error.message}</p>`;
+  }
+>>>>>>> 01032ea309ee3a2cf90a649126a76651af42ed28
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
+function debounce(func, delay = 300) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+}
+
+function adjustFontSize(size) {
+  const fontSize = `${size}px`;
+  const markdownInput = document.getElementById('markdown-input');
+  const preview = document.getElementById('preview');
+  
+  if (markdownInput) {
+    markdownInput.style.fontSize = fontSize;
+  }
+  if (preview) {
+    preview.style.fontSize = fontSize;
+  }
+  console.log('Adjusted font size to', fontSize);
+}
+
+function downloadFile(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  console.log('Downloaded file:', filename);
+}
+
+function downloadAsHtml() {
+  const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown Preview</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; }
+  </style>
+</head>
+<body>
+  ${preview.innerHTML}
+</body>
+</html>`;
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  downloadFile(blob, 'markdown-preview.html');
+}
+
+async function downloadAsPdf() {
+  const element = document.createElement('div');
+  element.innerHTML = preview.innerHTML;
+  element.style.padding = '20px';
+  element.style.fontFamily = 'Arial, sans-serif';
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename: 'markdown-preview.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  try {
+    document.body.style.cursor = 'wait';
+    await html2pdf().from(element).set(opt).save();
+    document.body.style.cursor = 'default';
+    console.log('Downloaded preview as PDF');
+  } catch (error) {
+    console.error('PDF generation failed:', error);
+    alert('Failed to generate PDF. Please try again.');
+    document.body.style.cursor = 'default';
+  }
+}
+
+function downloadAsMarkdown() {
+  const blob = new Blob([markdownInput.value], { type: 'text/markdown' });
+  downloadFile(blob, 'markdown-content.md');
+}
+
+// Toggle Preview Mode (Real-Time vs Manual)
+function togglePreviewMode(isRealTime) {
+  const markdownInput = document.getElementById('markdown-input');
+  const showPreviewButton = document.getElementById('show-preview');
+  const isMobile = window.innerWidth <= 768;
+  
+  if (!markdownInput) {
+    console.log('Markdown input not found, skipping preview mode toggle');
+    return;
+  }
+
+  // Always enable real-time preview on mobile
+  if (isMobile || isRealTime) {
+    markdownInput.addEventListener('input', debouncedRenderMarkdown);
+    console.log('Real-time preview enabled');
+  } else {
+    markdownInput.removeEventListener('input', debouncedRenderMarkdown);
+    console.log('Manual preview enabled');
+  }
+
+  // Show preview button only when not in real-time mode and not on mobile
+  if (showPreviewButton) {
+    showPreviewButton.style.display = (isMobile || isRealTime) ? 'none' : 'inline-block';
+  }
+}
+
+// Add window resize listener to handle preview button visibility
+window.addEventListener('resize', debounce(() => {
+  const isMobile = window.innerWidth <= 768;
+  const markdownInput = document.getElementById('markdown-input');
+  
+  if (markdownInput) {
+    // Re-enable real-time preview on mobile
+    if (isMobile) {
+      markdownInput.addEventListener('input', debouncedRenderMarkdown);
+    }
+    // Reset to user preference on desktop
+    else {
+      const realTimeToggle = document.getElementById('real-time-toggle');
+      togglePreviewMode(realTimeToggle?.checked || false);
+    }
+  }
+}, 250));
