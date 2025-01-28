@@ -173,53 +173,203 @@ function downloadFile(blob, filename) {
 }
 
 function downloadAsHtml() {
-  const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Markdown Preview</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; }
-  </style>
-</head>
-<body>
-  ${preview.innerHTML}
-</body>
-</html>`;
-  const blob = new Blob([htmlContent], { type: 'text/html' });
-  downloadFile(blob, 'markdown-preview.html');
+  const content = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Markdown Export</title>
+      <style>
+        body { 
+          font-family: system-ui, -apple-system, sans-serif; 
+          max-width: 800px; 
+          margin: 40px auto; 
+          padding: 20px;
+          line-height: 1.6;
+        }
+      </style>
+    </head>
+    <body>
+      ${preview.innerHTML}
+    </body>
+    </html>
+  `;
+  downloadFile(new Blob([content], { type: 'text/html' }), 'export.html');
 }
 
+// Remove the old downloadAsPdf function and add this new one
 async function downloadAsPdf() {
-  const element = document.createElement('div');
-  element.innerHTML = preview.innerHTML;
-  element.style.padding = '20px';
-  element.style.fontFamily = 'Arial, sans-serif';
-
-  const opt = {
-    margin: [10, 10, 10, 10],
-    filename: 'markdown-preview.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
   try {
     document.body.style.cursor = 'wait';
-    await html2pdf().from(element).set(opt).save();
-    document.body.style.cursor = 'default';
-    console.log('Downloaded preview as PDF');
+    
+    // Create a temporary container with the markdown content
+    const container = document.createElement('div');
+    container.style.width = '793px'; // A4 width in pixels at 96 DPI
+    container.style.padding = '40px';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.backgroundColor = '#ffffff';
+    container.style.wordBreak = 'break-word';
+    
+    // Add styles for the PDF content
+    container.innerHTML = `
+      <style>
+        * { margin: 0; padding: 0; }
+        body { 
+          font-family: Arial, sans-serif; 
+          line-height: 1.6; 
+          color: #333;
+          font-size: 12pt;
+        }
+        h1 { font-size: 24pt; margin: 20px 0; color: #000; }
+        h2 { font-size: 20pt; margin: 18px 0; color: #000; }
+        h3 { font-size: 16pt; margin: 16px 0; color: #000; }
+        h4 { font-size: 14pt; margin: 16px 0; color: #000; }
+        h5 { font-size: 12pt; margin: 16px 0; color: #000; }
+        h6 { font-size: 11pt; margin: 16px 0; color: #000; }
+        p { margin: 12px 0; line-height: 1.6; }
+        strong { color: #000; font-weight: bold; }
+        em { font-style: italic; }
+        blockquote { 
+          border-left: 3px solid #ccc; 
+          margin: 15px 0;
+          padding: 10px 20px;
+          color: #666;
+          background: #f9f9f9;
+        }
+        code {
+          background: #f5f5f5;
+          padding: 2px 5px;
+          border-radius: 3px;
+          font-family: 'Courier New', monospace;
+          font-size: 11pt;
+        }
+        pre {
+          background: #f5f5f5;
+          padding: 15px;
+          border-radius: 5px;
+          font-family: 'Courier New', monospace;
+          white-space: pre-wrap;
+          margin: 15px 0;
+          font-size: 11pt;
+        }
+        ul, ol { 
+          margin: 10px 0 10px 30px;
+          padding-left: 20px;
+        }
+        li { 
+          margin: 8px 0;
+          padding-left: 10px;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 15px 0;
+        }
+        th, td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+        }
+        img { 
+          max-width: 100%;
+          height: auto;
+          margin: 15px 0;
+        }
+        hr { 
+          border: none;
+          border-top: 1px solid #ddd;
+          margin: 20px 0;
+        }
+      </style>
+      ${marked.parse(markdownInput.value)}
+    `;
+
+    document.body.appendChild(container);
+
+    // Convert to canvas with higher quality settings
+    const canvas = await html2canvas(container, {
+      scale: 3, // Increased scale for better quality
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      windowWidth: container.scrollWidth,
+      height: container.scrollHeight,
+      scrollY: -window.scrollY,
+      scrollX: 0,
+      imageTimeout: 0,
+      onclone: (clonedDoc) => {
+        clonedDoc.querySelector('div').style.transform = 'scale(1)';
+      }
+    });
+
+    // Initialize PDF with precise dimensions
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4',
+      compress: false
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 40;
+
+    // Calculate dimensions while maintaining aspect ratio
+    const availableWidth = pageWidth - (margin * 2);
+    const availableHeight = pageHeight - (margin * 2);
+    const aspectRatio = canvas.width / canvas.height;
+    
+    // Calculate the number of pages needed
+    const imgHeight = availableWidth / aspectRatio;
+    const pageCount = Math.ceil(imgHeight / availableHeight);
+
+    // Add content to PDF pages
+    for (let i = 0; i < pageCount; i++) {
+      if (i > 0) pdf.addPage();
+
+      const sourceY = (i * canvas.height / pageCount) >> 0;
+      const sourceHeight = (canvas.height / pageCount) >> 0;
+
+      pdf.addImage(
+        canvas,
+        'JPEG',
+        margin,
+        margin,
+        availableWidth,
+        availableHeight,
+        null,
+        'FAST',
+        0,
+        {
+          sourceX: 0,
+          sourceY: sourceY,
+          sourceWidth: canvas.width,
+          sourceHeight: sourceHeight
+        }
+      );
+    }
+
+    // Save with high quality settings
+    pdf.save('markdown-export.pdf');
+    
+    // Cleanup
+    document.body.removeChild(container);
+    console.log('PDF generated successfully');
+
   } catch (error) {
     console.error('PDF generation failed:', error);
     alert('Failed to generate PDF. Please try again.');
+  } finally {
     document.body.style.cursor = 'default';
   }
 }
 
 function downloadAsMarkdown() {
-  const blob = new Blob([markdownInput.value], { type: 'text/markdown' });
-  downloadFile(blob, 'markdown-content.md');
+  const content = markdownInput.value;
+  downloadFile(new Blob([content], { type: 'text/markdown' }), 'export.md');
 }
 
 function attachEventListeners() {
@@ -306,12 +456,29 @@ function attachEventListeners() {
 
 const debouncedRenderMarkdown = debounce(renderMarkdown, 200);
 
+function attachExportListeners() {
+  const downloadHtmlBtn = document.getElementById('download-html');
+  const downloadPdfBtn = document.getElementById('download-pdf');
+  const downloadMdBtn = document.getElementById('download-md');
+
+  if (downloadHtmlBtn) {
+    downloadHtmlBtn.addEventListener('click', downloadAsHtml);
+  }
+  if (downloadPdfBtn) {
+    downloadPdfBtn.addEventListener('click', downloadAsPdf);
+  }
+  if (downloadMdBtn) {
+    downloadMdBtn.addEventListener('click', downloadAsMarkdown);
+  }
+}
+
 function initializeApp() {
   console.log('Initializing app');
   
   Promise.all([loadNavbar(), loadFooter()])
     .then(() => {
       attachEventListeners();
+      attachExportListeners();
       applyTheme('light');
       
       const markdownInput = document.getElementById('markdown-input');
