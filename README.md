@@ -1,42 +1,64 @@
-# MarkView
+# **MarkView**  
 
-**MarkView** is a simple and user-friendly Markdown Previewer built to help users write and preview Markdown in real-time. This project is part of **Android Club Winter of Code 2024** and is open for contributions!
-
----
-
-## **Current Features**
-- **Live Markdown Editing**: Type your Markdown and preview the formatted content by clicking the "Show Preview" button.
-- **Customizable Themes**: Switch between different themes to style your preview.
-- **Download as HTML**: Save your Markdown preview as an HTML file.
-- **Beginner-Friendly Codebase**: Aimed at fostering contributions from beginner-level developers.
+**MarkView** is a simple and user-friendly Markdown Previewer built to help users write and preview Markdown in real-time. This project is part of **Android Club Winter of Code 2024** and is open for contributions!  
 
 ---
 
-## **Technologies Used**
-- HTML5
-- CSS3
-- JavaScript
-- Marked JS Library ([check here](https://github.com/markedjs/marked))
-- GitHub Pages for Deployment
+## **Current Features**  
+- **Live Markdown Editing**: Type your Markdown and preview the formatted content by clicking the "Show Preview" button.  
+- **Customizable Themes**: Switch between different themes to style your preview.  
+- **Download as HTML**: Save your Markdown preview as an HTML file.  
+- **Integrated Code Editor**: Supports Java and Python coding with syntax highlighting.  
+- **Real-time Code Execution**:  
+  - **Python**: Runs using **Pyodide**, a WebAssembly port of Python for the browser.  
+  - **Java**: Uses **Judge0 API** for compiling and executing Java code.  
+- **Syntax Highlighting**: Provided using **CodeMirror**.  
+- **Beginner-Friendly Codebase**: Aimed at fostering contributions from beginner-level developers.  
 
 ---
 
-## **Demo**
-Visit the live version of the project [here](https://jyotibrat.github.io/MarkView/).
+## **Technologies Used**  
+- HTML5  
+- CSS3  
+- JavaScript  
+- **Pyodide** : used for in-browser Python execution
+- **Judge0 API** : used for Java execution
+- **CodeMirror** : used for syntax highlighting
+- **Marked JS** ([GitHub](https://github.com/markedjs/marked)) : for MarkDown
+- GitHub Pages : used for Deployment  
 
 ---
 
-## **Project Structure**
-```
+## **Demo**  
+Visit the live version of the project [here](https://jyotibrat.github.io/MarkView/).  
+
+---
+
+## **Project Structure**  
+```plaintext
 MarkView
 ├── src
+│   ├── assets/favicon
+│   │   ├── apple-touch-icon.png
+│   │   ├── favicon-16x16.png
+│   │   ├── favicon-32x32.png
+│   │   └── site.webmanifest
+│   ├── java_ide
+│   │   ├── java_ide.css
+│   │   ├── java_ide.html
+│   │   └── java_ide_script.js
+│   ├── python_ide
+│   │   ├── python_ide.css
+│   │   ├── python_ide.html
+│   │   └── py_script.js
 │   ├── styles 
 │   │   ├── about.css
 │   │   ├── base.css
 │   │   ├── components.css
 │   │   ├── file_upload.css
 │   │   ├── footer.css
-│   │   └── themes.css
+│   │   ├── themes.css
+│   │   └── navbar.css
 │   ├── about.html
 │   ├── file_upload.html
 │   ├── footer.html
@@ -51,7 +73,7 @@ MarkView
 ├── LICENSE 
 └── README.md
 ```
----
+
 -Base.css has styles for index.html
 -components has navbar and common components for index and others
 -script.js has all the javascripts
