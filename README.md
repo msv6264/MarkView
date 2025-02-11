@@ -21,11 +21,11 @@
 - HTML5  
 - CSS3  
 - JavaScript  
-- **Pyodide** (for in-browser Python execution)  
-- **Judge0 API** (for Java execution)  
-- **CodeMirror** (for syntax highlighting)  
-- **Marked JS** ([GitHub](https://github.com/markedjs/marked))  
-- GitHub Pages for Deployment  
+- **Pyodide** : used for in-browser Python execution
+- **Judge0 API** : used for Java execution
+- **CodeMirror** : used for syntax highlighting
+- **Marked JS** ([GitHub](https://github.com/markedjs/marked)) : for MarkDown
+- GitHub Pages : used for Deployment  
 
 ---
 
